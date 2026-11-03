@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080b13">
+  <meta name="description" content="Единый список прокси: MTProto, SOCKS и WEB. Удобный поиск, отдельное копирование каждого прокси и экспорт списка в TXT.">
+  <title>PROXY_LIST — Proxy control center</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
+    :root{color-scheme:dark;--bg:#080b13;--panel:#111622;--panel2:#0d121d;--line:rgba(190,205,255,.115);--text:#f4f6ff;--muted:#8e9bb5;--mint:#b6ffce;--cyan:#78e6ff;--violet:#b7a5ff;--orange:#ffcf91;--radius:24px;--shadow:0 24px 80px rgba(0,0,0,.28)}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:Manrope,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow-x:hidden}
+    body:before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background:radial-gradient(ellipse at 12% 0%,rgba(65,103,255,.18),transparent 36%),radial-gradient(ellipse at 87% 16%,rgba(105,255,192,.105),transparent 29%),radial-gradient(ellipse at 48% 78%,rgba(119,83,239,.08),transparent 34%),#080b13}
+    body:after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.13;background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);background-size:64px 64px;mask-image:linear-gradient(to bottom,black,transparent 72%)}
+    button,input,a{font:inherit}button{color:inherit;cursor:pointer}a{color:inherit;text-decoration:none}button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+    .shell{width:min(1220px,calc(100% - 40px));margin:0 auto}
+    .topbar{height:82px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(198,209,255,.09)}
+    .brand{display:inline-flex;align-items:center;gap:12px;font-weight:800;letter-spacing:-.04em;font-size:17px}
+    .brand-mark{width:38px;height:38px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(145deg,#c0ffd1,#6ce9ed 55%,#9a8aff);box-shadow:0 8px 26px rgba(111,245,213,.13)}
+    .brand-mark svg{width:23px;height:23px;color:#081219}
+    .brand .underscore{color:var(--mint)}
+    .top-actions{display:flex;align-items:center;gap:12px}.nav-link{color:#a9b4c9;font-size:12px;font-weight:700;padding:10px 12px;border-radius:10px;transition:color .2s,background .2s}.nav-link:hover{color:#fff;background:rgba(255,255,255,.055)}
+    .health-pill{display:inline-flex;gap:8px;align-items:center;border:1px solid rgba(182,255,206,.18);background:rgba(182,255,206,.055);color:#c8ffda;border-radius:999px;padding:9px 12px;font-size:11px;font-weight:800;letter-spacing:.03em;white-space:nowrap}.dot{width:7px;height:7px;border-radius:50%;background:var(--mint);box-shadow:0 0 14px rgba(182,255,206,.8)}
+    .hero{position:relative;padding:82px 0 47px;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:40px;align-items:center}
+    .hero-copy{position:relative;z-index:1}.eyebrow{display:inline-flex;align-items:center;gap:9px;color:#b7c4df;font-size:11px;font-weight:800;letter-spacing:.17em;text-transform:uppercase}.eyebrow-icon{width:24px;height:24px;display:grid;place-items:center;border-radius:8px;background:rgba(120,230,255,.1);color:var(--cyan)}
+    h1{font-size:clamp(44px,6.5vw,78px);line-height:.99;letter-spacing:-.075em;margin:23px 0 22px;font-weight:800;max-width:790px}h1 .gradient{background:linear-gradient(100deg,#b8ffd1 0%,#7be6ff 42%,#bca8ff 95%);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .hero-text{max-width:640px;color:#9ba8c1;font-size:15px;line-height:1.85;margin:0}
+    .hero-cta{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:28px}
+    .btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:13px 17px;border-radius:13px;border:1px solid transparent;font-size:12px;font-weight:800;transition:transform .2s,border-color .2s,background .2s,box-shadow .2s;white-space:nowrap}.btn:hover{transform:translateY(-2px)}.btn svg{width:16px;height:16px;flex:0 0 auto}.btn-primary{color:#08120e;background:linear-gradient(115deg,#c8ffd5,#81f1dc);box-shadow:0 10px 28px rgba(125,245,203,.12)}.btn-primary:hover{box-shadow:0 13px 32px rgba(125,245,203,.22)}.btn-quiet{background:rgba(255,255,255,.035);border-color:var(--line);color:#e0e6f7}.btn-quiet:hover{background:rgba(255,255,255,.07);border-color:rgba(190,205,255,.25)}.btn-small{padding:9px 12px;border-radius:10px;font-size:11px}.btn-icon{width:36px;height:36px;padding:0;display:grid;place-items:center;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.035)}
+    .hero-visual{position:relative;min-height:275px;display:grid;place-items:center;isolation:isolate}.orbit{width:260px;height:260px;border:1px solid rgba(155,184,255,.16);border-radius:50%;position:absolute;animation:spin 32s linear infinite}.orbit:before,.orbit:after{content:"";position:absolute;inset:25px;border:1px dashed rgba(162,211,255,.17);border-radius:50%}.orbit:after{inset:58px;border-style:solid;opacity:.5}.orbit-two{width:215px;height:215px;transform:rotate(60deg);animation:spinReverse 24s linear infinite;border-color:rgba(182,255,206,.2)}.orbit-dot{position:absolute;top:29px;left:40px;width:9px;height:9px;border-radius:50%;background:var(--mint);box-shadow:0 0 20px var(--mint)}.orbit-dot.two{top:auto;left:auto;right:7px;bottom:74px;width:6px;height:6px;background:var(--violet);box-shadow:0 0 18px var(--violet)}.core{width:150px;height:150px;display:grid;place-items:center;border-radius:43px;transform:rotate(-9deg);background:linear-gradient(145deg,rgba(180,255,214,.2),rgba(113,213,255,.08) 45%,rgba(168,139,255,.12));border:1px solid rgba(210,255,231,.36);box-shadow:inset 0 0 48px rgba(182,255,206,.075),0 20px 90px rgba(90,184,255,.11);backdrop-filter:blur(12px)}.core-inner{width:85px;height:85px;border-radius:29px;display:grid;place-items:center;background:linear-gradient(145deg,#d0ffdc,#76e6ea 58%,#a5a0ff);box-shadow:0 0 65px rgba(139,246,212,.16);transform:rotate(9deg)}.core-inner svg{width:46px;height:46px;color:#09151a}.float-label{position:absolute;z-index:2;padding:10px 12px;border:1px solid rgba(190,205,255,.17);border-radius:12px;background:rgba(14,20,32,.83);box-shadow:var(--shadow);font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#d8e3fb;backdrop-filter:blur(14px)}.float-label span{display:block;margin-top:4px;color:var(--mint);font-family:"DM Mono",monospace;font-size:12px;letter-spacing:0;text-transform:none}.float-one{top:28px;right:0}.float-two{bottom:24px;left:-3px}.float-three{bottom:21px;right:-5px;color:var(--violet)}
+    @keyframes spin{to{transform:rotate(360deg)}}@keyframes spinReverse{to{transform:rotate(-300deg)}}@keyframes rise{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+    .stats-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:5px 0 42px}.stat-card{position:relative;overflow:hidden;min-height:104px;padding:19px;border:1px solid var(--line);border-radius:17px;background:linear-gradient(145deg,rgba(19,26,41,.88),rgba(12,17,28,.84));}.stat-card:after{content:"";position:absolute;width:95px;height:95px;right:-39px;top:-41px;border-radius:50%;background:var(--glow,rgba(120,230,255,.13));filter:blur(2px)}.stat-label{position:relative;z-index:1;display:flex;align-items:center;gap:8px;color:#8795af;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.stat-num{position:relative;z-index:1;margin-top:10px;font-size:27px;font-weight:800;letter-spacing:-.06em}.stat-num small{font-size:11px;font-weight:700;letter-spacing:0;color:#7d8ba6;margin-left:6px}.stat-card.mint{--glow:rgba(182,255,206,.16)}.stat-card.cyan{--glow:rgba(120,230,255,.15)}.stat-card.violet{--glow:rgba(183,165,255,.17)}.stat-card.orange{--glow:rgba(255,207,145,.16)}
+    .workspace{border:1px solid rgba(191,207,255,.13);border-radius:26px;background:linear-gradient(145deg,rgba(17,23,36,.97),rgba(10,15,24,.98));box-shadow:var(--shadow);overflow:hidden}.workspace-head{display:flex;justify-content:space-between;align-items:flex-start;gap:25px;padding:26px 27px 22px;border-bottom:1px solid rgba(191,207,255,.09)}.section-kicker{color:var(--mint);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.16em}.workspace h2{font-size:23px;line-height:1.2;letter-spacing:-.045em;margin:8px 0}.workspace-sub{color:#8f9cb5;font-size:12px;line-height:1.65;margin:0}.head-actions{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+    .toolbar{padding:20px 27px 17px;display:flex;gap:13px;align-items:center;justify-content:space-between;flex-wrap:wrap;border-bottom:1px solid rgba(191,207,255,.08)}.search-wrap{position:relative;flex:1;min-width:220px;max-width:400px}.search-wrap svg{position:absolute;width:17px;height:17px;left:14px;top:50%;transform:translateY(-50%);color:#7f8ca5;pointer-events:none}.search{width:100%;height:43px;border:1px solid rgba(191,207,255,.12);border-radius:12px;background:rgba(255,255,255,.025);color:#f4f6ff;padding:0 14px 0 42px;outline:none;font-size:12px;transition:border-color .2s,background .2s}.search::placeholder{color:#65718a}.search:focus{border-color:rgba(120,230,255,.5);background:rgba(120,230,255,.04)}.filter-tabs{display:flex;gap:5px;padding:4px;border-radius:13px;background:rgba(3,7,13,.62);border:1px solid rgba(191,207,255,.08);flex-wrap:wrap}.tab{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:9px;background:transparent;color:#8794ad;padding:9px 11px;font-size:11px;font-weight:800;transition:background .2s,color .2s}.tab .tab-count{font-family:"DM Mono",monospace;font-size:10px;opacity:.7}.tab:hover{color:#f3f5ff}.tab.active{color:#eafdf0;background:rgba(182,255,206,.12);box-shadow:inset 0 0 0 1px rgba(182,255,206,.1)}.tab.active .tab-count{color:var(--mint);opacity:1}
+    .list-meta{padding:16px 27px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;color:#72809b;font-size:11px}.list-meta strong{color:#c3cde1}.tiny-refresh{display:inline-flex;align-items:center;gap:7px;border:0;background:transparent;color:#9aa8c0;font-size:11px;font-weight:700}.tiny-refresh:hover{color:var(--mint)}.tiny-refresh svg{width:14px;height:14px}
+    #proxyGroups{padding:9px 27px 29px}.proxy-group{padding-top:21px;animation:rise .35s both}.group-head{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:13px}.group-title{display:flex;align-items:center;gap:11px}.group-icon{width:35px;height:35px;display:grid;place-items:center;border-radius:12px;border:1px solid var(--category-line);background:var(--category-bg);color:var(--category-color)}.group-icon svg{width:18px;height:18px}.group-name{font-size:14px;font-weight:800;letter-spacing:-.025em}.group-desc{margin-top:3px;color:#77849c;font-size:10px}.group-tools{display:flex;align-items:center;gap:10px}.group-total{font-family:"DM Mono",monospace;color:#8390a9;font-size:11px}.copy-group{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:9px;padding:8px 10px;color:#b6c2d9;font-size:10px;font-weight:800;transition:.2s}.copy-group:hover{color:#fff;background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.25)}.copy-group svg{width:13px;height:13px}
+    .proxy-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.proxy-card{min-width:0;border:1px solid rgba(191,207,255,.105);border-radius:15px;background:linear-gradient(140deg,rgba(21,28,43,.84),rgba(13,18,29,.9));padding:14px;transition:transform .2s,border-color .2s,background .2s}.proxy-card:hover{transform:translateY(-2px);border-color:rgba(191,207,255,.25);background:linear-gradient(140deg,rgba(25,34,51,.95),rgba(15,21,34,.96))}.proxy-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:11px}.proxy-index{color:#697791;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.04em}.type-chip{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--category-line);border-radius:999px;background:var(--category-bg);color:var(--category-color);padding:5px 8px;font-size:9px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}.type-chip .dot{width:5px;height:5px;background:currentColor;box-shadow:none}.proxy-value{min-height:44px;display:block;overflow-wrap:anywhere;white-space:pre-wrap;color:#c6d2e9;font-family:"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;line-height:1.8;user-select:text}.proxy-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:13px;padding-top:12px;border-top:1px solid rgba(191,207,255,.075)}.proxy-hint{color:#6e7a92;font-size:10px}.copy-one{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:91px;border:1px solid rgba(182,255,206,.18);border-radius:9px;background:rgba(182,255,206,.065);color:#c8ffda;padding:8px 10px;font-size:10px;font-weight:800;transition:.2s}.copy-one svg{width:13px;height:13px}.copy-one:hover{background:rgba(182,255,206,.14);border-color:rgba(182,255,206,.32)}.copy-one.copied{color:#07120e;background:var(--mint)}
+    .empty{padding:50px 22px;text-align:center;border:1px dashed rgba(191,207,255,.15);border-radius:17px;margin-top:12px}.empty-icon{width:48px;height:48px;display:grid;place-items:center;margin:0 auto 15px;border-radius:15px;background:rgba(120,230,255,.08);color:var(--cyan)}.empty-icon svg{width:23px;height:23px}.empty h3{font-size:16px;margin:0 0 7px}.empty p{margin:0;color:#8794ad;font-size:12px;line-height:1.7}.load-state{padding:35px 20px;text-align:center;color:#8997b0;font-size:12px}.spinner{width:18px;height:18px;margin:0 auto 10px;border:2px solid rgba(255,255,255,.1);border-top-color:var(--mint);border-radius:50%;animation:spin .8s linear infinite}
+    .bottom-strip{margin:23px 0 72px;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:21px 25px;border:1px solid var(--line);border-radius:19px;background:linear-gradient(105deg,rgba(182,255,206,.05),rgba(120,230,255,.035),rgba(183,165,255,.045))}.bottom-main{display:flex;align-items:center;gap:14px}.bottom-icon{width:40px;height:40px;display:grid;place-items:center;border-radius:13px;background:rgba(182,255,206,.09);color:var(--mint)}.bottom-icon svg{width:19px;height:19px}.bottom-title{font-size:12px;font-weight:800}.bottom-text{margin-top:4px;color:#8491a9;font-size:10px;line-height:1.6}.bottom-strip .btn{flex:0 0 auto}
+    footer{border-top:1px solid rgba(191,207,255,.08);padding:23px 0 34px;display:flex;justify-content:space-between;align-items:center;gap:15px;color:#65728a;font-size:10px}.footer-brand{color:#9daac2;font-weight:800;letter-spacing:.05em}.footer-links{display:flex;gap:16px;flex-wrap:wrap}.footer-links a:hover{color:var(--mint)}
+    .toast{position:fixed;z-index:100;left:50%;bottom:24px;transform:translate(-50%,16px);display:flex;align-items:center;gap:10px;padding:12px 16px;border:1px solid rgba(182,255,206,.25);border-radius:13px;background:rgba(11,18,27,.96);box-shadow:0 18px 50px rgba(0,0,0,.38);color:#d5ffe1;font-size:12px;font-weight:800;opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;backdrop-filter:blur(18px);max-width:calc(100vw - 30px)}.toast.show{opacity:1;transform:translate(-50%,0)}.toast svg{width:16px;height:16px;color:var(--mint);flex-shrink:0}
+    @media(max-width:960px){.hero{grid-template-columns:minmax(0,1fr) 245px;gap:10px;padding-top:65px}.hero-visual{transform:scale(.85)}.stats-row{grid-template-columns:repeat(2,minmax(0,1fr))}.workspace-head{flex-direction:column}.head-actions{justify-content:flex-start}}
+    @media(max-width:680px){.shell{width:min(100% - 26px,1220px)}.topbar{height:69px}.top-actions .nav-link{display:none}.health-pill{padding:8px 9px;font-size:10px}.brand{font-size:15px;gap:9px}.brand-mark{width:34px;height:34px}.hero{display:block;padding:53px 0 28px}.hero-visual{display:none}h1{font-size:clamp(43px,13vw,65px);margin:19px 0}.hero-text{font-size:13px;line-height:1.8}.hero-cta{margin-top:23px}.hero-cta .btn{flex:1}.stats-row{gap:8px;margin-bottom:28px}.stat-card{padding:15px;min-height:94px}.stat-num{font-size:25px}.stat-label{font-size:9px;letter-spacing:.07em}.workspace{border-radius:19px}.workspace-head{padding:21px 17px 18px;gap:18px}.workspace h2{font-size:20px}.workspace-sub{font-size:11px}.head-actions{width:100%}.head-actions .btn{flex:1}.toolbar{padding:16px 15px;align-items:stretch}.search-wrap{max-width:none;min-width:100%}.filter-tabs{width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}.tab{justify-content:center;padding:9px 4px;font-size:10px;gap:5px}.tab .tab-count{font-size:9px}.list-meta{padding:14px 16px 0;font-size:10px}#proxyGroups{padding:6px 15px 20px}.group-head{align-items:flex-start}.group-icon{width:32px;height:32px;border-radius:10px}.group-name{font-size:12px}.group-desc{max-width:170px;line-height:1.5}.group-total{display:none}.copy-group{font-size:9px;padding:8px}.proxy-grid{grid-template-columns:minmax(0,1fr);gap:8px}.proxy-card{padding:13px}.proxy-value{min-height:0;font-size:10px;line-height:1.65}.bottom-strip{align-items:flex-start;flex-direction:column;margin:18px 0 48px;padding:18px}.bottom-strip .btn{width:100%}footer{align-items:flex-start;flex-direction:column}.footer-links{gap:13px}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+  </style>
+</head>
+<body>
+  <header class="shell topbar">
+    <a class="brand" href="/" aria-label="PROXY LIST — главная">
+      <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 7.5h5.2c2.8 0 4.4 1.7 4.4 4.5s-1.6 4.5-4.4 4.5H5V7.5Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M14.4 8h4.6M14.4 12h4.6M14.4 16h4.6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+      <span>PROXY<span class="underscore">_</span>LIST</span>
+    </a>
+    <div class="top-actions">
+      <a class="nav-link" href="#library">Библиотека</a>
+      <a class="nav-link" href="#about">О проекте</a>
+      <span class="health-pill"><span class="dot"></span><span id="healthText">СИСТЕМА ГОТОВА</span></span>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="eyebrow-icon"><svg viewBox="0 0 24 24" fill="none" width="13" height="13" aria-hidden="true"><path d="m12 2 2.4 6.7L21 11l-6.6 2.3L12 20l-2.4-6.7L3 11l6.6-2.3L12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m19 16 .9 2.1L22 19l-2.1.9L19 22l-.9-2.1L16 19l2.1-.9L19 16Z" fill="currentColor"/></svg></span> Proxy control center <span style="color:#63718d">/ 01</span></div>
+        <h1>Прокси.<br><span class="gradient">Без лишних движений.</span></h1>
+        <p class="hero-text">Единая библиотека подключений в аккуратном интерфейсе. Найди нужный тип, скопируй один адрес или забери весь список одним нажатием.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#library"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Открыть библиотеку</a>
+          <button class="btn btn-quiet" id="heroCopy"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" stroke="currentColor" stroke-width="1.8"/></svg>Скопировать всё</button>
+        </div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="orbit"><span class="orbit-dot"></span><span class="orbit-dot two"></span></div><div class="orbit orbit-two"></div>
+        <div class="core"><div class="core-inner"><svg viewBox="0 0 48 48" fill="none"><path d="M24 5 40 14v20L24 43 8 34V14L24 5Z" stroke="currentColor" stroke-width="2.2"/><path d="M8 14l16 10 16-10M24 24v19M16 10l16 9M32 10l-16 9" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></div></div>
+        <div class="float-label float-one">Proxy index<span id="visualCount">0 nodes</span></div><div class="float-label float-two">Live directory<span>3 categories</span></div><div class="float-label float-three">Copy ready<span>TXT · JSON</span></div>
+      </div>
+    </section>
+
+    <section class="stats-row" aria-label="Статистика прокси">
+      <div class="stat-card mint"><div class="stat-label"><span class="dot"></span>Всего в списке</div><div class="stat-num" id="countAll">—<small>адресов</small></div></div>
+      <div class="stat-card cyan"><div class="stat-label"><span style="color:var(--cyan)">◈</span>MTProto</div><div class="stat-num" id="countMtproto">—<small>прокси</small></div></div>
+      <div class="stat-card violet"><div class="stat-label"><span style="color:var(--violet)">◉</span>SOCKS</div><div class="stat-num" id="countSocks">—<small>прокси</small></div></div>
+      <div class="stat-card orange"><div class="stat-label"><span style="color:var(--orange)">↗</span>WEB</div><div class="stat-num" id="countWeb">—<small>прокси</small></div></div>
+    </section>
+
+    <section class="workspace" id="library">
+      <div class="workspace-head">
+        <div><div class="section-kicker">Proxy library / 02</div><h2>Твоя библиотека прокси</h2><p class="workspace-sub">Каждый адрес — отдельная карточка с собственной кнопкой копирования.</p></div>
+        <div class="head-actions">
+          <button class="btn btn-primary btn-small" id="copyAll"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" stroke="currentColor" stroke-width="1.8"/></svg>Копировать все</button>
+          <button class="btn btn-quiet btn-small" id="downloadAll"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Экспорт TXT</button>
+        </div>
+      </div>
+      <div class="toolbar">
+        <label class="search-wrap"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 4.4 4.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input class="search" id="search" type="search" placeholder="Найти адрес или порт…" autocomplete="off" aria-label="Поиск прокси"></label>
+        <div class="filter-tabs" role="tablist" aria-label="Тип прокси">
+          <button class="tab active" data-filter="all" role="tab" aria-selected="true">Все <span class="tab-count" id="tabAll">—</span></button>
+          <button class="tab" data-filter="mtproto" role="tab" aria-selected="false">MTProto <span class="tab-count" id="tabMtproto">—</span></button>
+          <button class="tab" data-filter="socks" role="tab" aria-selected="false">SOCKS <span class="tab-count" id="tabSocks">—</span></button>
+          <button class="tab" data-filter="web" role="tab" aria-selected="false">WEB <span class="tab-count" id="tabWeb">—</span></button>
+        </div>
+      </div>
+      <div class="list-meta"><span id="resultsText">Подключаемся к источнику данных…</span><button class="tiny-refresh" id="refresh"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.2 9A7 7 0 0 1 18 6l2 6M4 12l2 6a7 7 0 0 0 11.8-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Обновить список</button></div>
+      <div id="proxyGroups"><div class="load-state"><div class="spinner"></div>Загружаем прокси…</div></div>
+    </section>
+
+    <section class="bottom-strip" id="about">
+      <div class="bottom-main"><span class="bottom-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 20 6v5c0 5.1-3.5 8.5-8 10-4.5-1.5-8-4.9-8-10V6l8-3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m8.5 12 2.2 2.2 4.8-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><div class="bottom-title">Чистый список. Удобный экспорт.</div><div class="bottom-text">Повторы удаляются автоматически. Сам сайт не проверяет скорость и доступность каждого адреса.</div></div></div>
+      <a class="btn btn-quiet btn-small" href="/api/proxies"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 5H5v14h14v-3M11 4h9v9M20 4l-9 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Открыть JSON API</a>
+    </section>
+  </main>
+
+  <footer class="shell"><span class="footer-brand">PROXY_LIST <span style="color:var(--mint)">/</span> CONTROL CENTER</span><span>Обновление источников — до 5 минут кэша</span><div class="footer-links"><a href="/mtproto.txt">MTProto TXT</a><a href="/socks.txt">SOCKS TXT</a><a href="/web.txt">WEB TXT</a><a href="/health">Health</a></div></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="toastText">Скопировано</span></div>
+
+  <script>
+    const TYPE_META = {
+      mtproto: { label: "MTProto", description: "Telegram · Быстрое подключение", color: "#78e6ff", bg: "rgba(120,230,255,.075)", line: "rgba(120,230,255,.20)", hint: "Telegram proxy link", endpoint: "/mtproto.txt", icon: "<path d=\"M12 3 20 7v5c0 4.5-3 7.5-8 9-5-1.5-8-4.5-8-9V7l8-4Z\"/><path d=\"m8 12 2.4 2.4L16 9\"/>" },
+      socks: { label: "SOCKS", description: "SOCKS4 / SOCKS5 · Универсальные", color: "#b7a5ff", bg: "rgba(183,165,255,.075)", line: "rgba(183,165,255,.22)", hint: "SOCKS endpoint", endpoint: "/socks.txt", icon: "<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M3.8 9h16.4M3.8 15h16.4M12 3.5c2 2.2 3 5 3 8.5s-1 6.3-3 8.5c-2-2.2-3-5-3-8.5s1-6.3 3-8.5Z\"/>" },
+      web: { label: "WEB", description: "HTTP / HTTPS · Веб-прокси", color: "#ffcf91", bg: "rgba(255,207,145,.075)", line: "rgba(255,207,145,.22)", hint: "HTTP(S) endpoint", endpoint: "/web.txt", icon: "<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M3.8 9h16.4M3.8 15h16.4M12 3.5v17\"/>" }
+    };
+    const state = { all: [], counts: { mtproto: 0, socks: 0, web: 0 }, filter: "all", query: "", loaded: false };
+    const $ = (selector) => document.querySelector(selector);
+    const groupsEl = $("#proxyGroups");
+    let toastTimer;
+
+    function showToast(message) {
+      $("#toastText").textContent = message;
+      const toast = $("#toast");
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2300);
+    }
+    async function copyText(text, button) {
+      if (!text) { showToast("Нечего копировать"); return; }
+      try {
+        if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(text);
+        else {
+          const field = document.createElement("textarea");
+          field.value = text; field.setAttribute("readonly", "");
+          field.style.position = "fixed"; field.style.opacity = "0"; field.style.top = "0"; field.style.left = "-9999px";
+          document.body.appendChild(field); field.select();
+          const copied = document.execCommand("copy"); field.remove();
+          if (!copied) throw new Error("Clipboard unavailable");
+        }
+        if (button) {
+          const previous = button.innerHTML;
+          button.classList.add("copied");
+          button.innerHTML = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Готово';
+          setTimeout(() => { if (button.isConnected) { button.classList.remove("copied"); button.innerHTML = previous; } }, 1500);
+        }
+        showToast("Скопировано: " + text.split("\n").filter(Boolean).length + (text.includes("\n") ? " строк" : " адрес"));
+      } catch {
+        showToast("Браузер не разрешил копирование — выдели адрес вручную");
+      }
+    }
+    function formatNumber(n) { return new Intl.NumberFormat("ru-RU").format(n); }
+    function getFiltered(type = null) {
+      const typeFilter = type || state.filter;
+      const q = state.query.trim().toLowerCase();
+      return state.all.filter((item) => {
+        const typeOk = typeFilter === "all" || item.type === typeFilter;
+        return typeOk && (!q || item.value.toLowerCase().includes(q));
+      });
+    }
+    function makeIcon(path) {
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("viewBox", "0 0 24 24"); svg.setAttribute("fill", "none"); svg.setAttribute("stroke", "currentColor"); svg.setAttribute("stroke-width", "1.7"); svg.setAttribute("stroke-linecap", "round"); svg.setAttribute("stroke-linejoin", "round"); svg.setAttribute("aria-hidden", "true");
+      // Trusted, fixed icon paths are supplied only by TYPE_META above.
+      svg.innerHTML = path;
+      return svg;
+    }
+    function createProxyCard(item, index) {
+      const meta = TYPE_META[item.type];
+      const card = document.createElement("article"); card.className = "proxy-card";
+      card.style.setProperty("--category-color", meta.color); card.style.setProperty("--category-bg", meta.bg); card.style.setProperty("--category-line", meta.line);
+      const top = document.createElement("div"); top.className = "proxy-top";
+      const number = document.createElement("span"); number.className = "proxy-index"; number.textContent = "NODE / " + String(index + 1).padStart(3, "0");
+      const chip = document.createElement("span"); chip.className = "type-chip"; chip.appendChild(document.createElement("span")).className = "dot"; chip.append(" " + meta.label);
+      top.append(number, chip);
+      const value = document.createElement("code"); value.className = "proxy-value"; value.textContent = item.value; value.title = item.value;
+      const bottom = document.createElement("div"); bottom.className = "proxy-bottom";
+      const hint = document.createElement("span"); hint.className = "proxy-hint"; hint.textContent = meta.hint;
+      const copy = document.createElement("button"); copy.className = "copy-one"; copy.type = "button"; copy.appendChild(makeIcon('<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>')); copy.append("Копировать"); copy.addEventListener("click", () => copyText(item.value, copy));
+      bottom.append(hint, copy); card.append(top, value, bottom);
+      return card;
+    }
+    function createGroup(type, items, offset) {
+      const meta = TYPE_META[type];
+      const section = document.createElement("section"); section.className = "proxy-group";
+      const head = document.createElement("div"); head.className = "group-head";
+      const left = document.createElement("div"); left.className = "group-title";
+      const icon = document.createElement("span"); icon.className = "group-icon"; icon.style.setProperty("--category-color", meta.color); icon.style.setProperty("--category-bg", meta.bg); icon.style.setProperty("--category-line", meta.line); icon.appendChild(makeIcon(meta.icon));
+      const titleBox = document.createElement("div"); const title = document.createElement("div"); title.className = "group-name"; title.textContent = meta.label;
+      const desc = document.createElement("div"); desc.className = "group-desc"; desc.textContent = meta.description; titleBox.append(title, desc); left.append(icon, titleBox);
+      const tools = document.createElement("div"); tools.className = "group-tools";
+      const total = document.createElement("span"); total.className = "group-total"; total.textContent = formatNumber(items.length) + " items";
+      const copy = document.createElement("button"); copy.className = "copy-group"; copy.type = "button"; copy.appendChild(makeIcon('<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>')); copy.append("Копировать категорию"); copy.addEventListener("click", () => copyText(items.map((p) => p.value).join("\n"), copy));
+      tools.append(total, copy); head.append(left, tools);
+      const grid = document.createElement("div"); grid.className = "proxy-grid";
+      items.forEach((item, i) => grid.appendChild(createProxyCard(item, offset + i)));
+      section.append(head, grid); return section;
+    }
+    function render() {
+      groupsEl.replaceChildren();
+      const filtered = getFiltered();
+      $("#resultsText").innerHTML = '<strong>' + formatNumber(filtered.length) + '</strong> ' + (state.query ? 'совпадений по поиску' : 'адресов в выборке');
+      const categories = state.filter === "all" ? ["mtproto", "socks", "web"] : [state.filter];
+      let offset = 0;
+      for (const type of categories) {
+        const items = filtered.filter((item) => item.type === type);
+        if (items.length) groupsEl.appendChild(createGroup(type, items, offset));
+        offset += items.length;
+      }
+      if (!filtered.length) {
+        const empty = document.createElement("div"); empty.className = "empty";
+        const icon = document.createElement("div"); icon.className = "empty-icon"; icon.appendChild(makeIcon('<circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.4 4.4"/>'));
+        const title = document.createElement("h3"); title.textContent = state.loaded ? (state.query ? "Ничего не найдено" : "В этой категории пока пусто") : "Загружаем список";
+        const text = document.createElement("p"); text.textContent = state.loaded ? (state.query ? "Попробуй изменить поисковый запрос или выбрать другой тип прокси." : "Добавь адреса в data/proxies.txt или проверь источники в sources.txt.") : "Подключаемся к API и собираем доступные адреса.";
+        empty.append(icon, title, text); groupsEl.appendChild(empty);
+      }
+    }
+    function setCounts(counts) {
+      const total = counts.mtproto + counts.socks + counts.web;
+      $("#countAll").innerHTML = formatNumber(total) + "<small>адресов</small>";
+      $("#countMtproto").innerHTML = formatNumber(counts.mtproto) + "<small>прокси</small>";
+      $("#countSocks").innerHTML = formatNumber(counts.socks) + "<small>прокси</small>";
+      $("#countWeb").innerHTML = formatNumber(counts.web) + "<small>прокси</small>";
+      $("#visualCount").textContent = formatNumber(total) + " nodes";
+      $("#tabAll").textContent = formatNumber(total);
+      $("#tabMtproto").textContent = formatNumber(counts.mtproto);
+      $("#tabSocks").textContent = formatNumber(counts.socks);
+      $("#tabWeb").textContent = formatNumber(counts.web);
+    }
+    async function loadProxies() {
+      $("#healthText").textContent = "СИНХРОНИЗАЦИЯ";
+      $("#resultsText").textContent = "Загружаем список прокси…";
+      try {
+        const response = await fetch("/api/proxies", { headers: { "Accept": "application/json" }, cache: "no-store" });
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        const data = await response.json();
+        const raw = Array.isArray(data.proxies) ? data.proxies : [];
+        state.all = raw.filter((item) => item && TYPE_META[item.type] && typeof item.value === "string");
+        state.counts = data.counts || { mtproto: 0, socks: 0, web: 0 };
+        state.counts = { mtproto: state.all.filter(p => p.type === "mtproto").length, socks: state.all.filter(p => p.type === "socks").length, web: state.all.filter(p => p.type === "web").length };
+        state.loaded = true;
+        setCounts(state.counts); render();
+        $("#healthText").textContent = "СИСТЕМА ГОТОВА";
+        $("#resultsText").innerHTML = '<strong>' + formatNumber(state.all.length) + '</strong> адресов · источник синхронизирован';
+      } catch (error) {
+        state.loaded = true; state.all = []; state.counts = { mtproto: 0, socks: 0, web: 0 }; setCounts(state.counts); render();
+        $("#healthText").textContent = "API НЕДОСТУПЕН";
+        $("#resultsText").textContent = "Не удалось подключиться к /api/proxies. Проверь настройки Cloudflare Pages.";
+      }
+    }
+    function downloadText(items, filename) {
+      const content = items.map((item) => item.value).join("\n") + (items.length ? "\n" : "");
+      const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob); const link = document.createElement("a");
+      link.href = url; link.download = filename; document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url);
+      showToast("TXT-файл подготовлен: " + items.length + " адресов");
+    }
+
+    document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click", () => {
+      state.filter = tab.dataset.filter;
+      document.querySelectorAll(".tab").forEach((t) => { const active = t === tab; t.classList.toggle("active", active); t.setAttribute("aria-selected", String(active)); });
+      render();
+    }));
+    $("#search").addEventListener("input", (event) => { state.query = event.target.value; render(); });
+    $("#copyAll").addEventListener("click", () => copyText(state.all.map((p) => p.value).join("\n"), $("#copyAll")));
+    $("#heroCopy").addEventListener("click", () => copyText(state.all.map((p) => p.value).join("\n"), $("#heroCopy")));
+    $("#downloadAll").addEventListener("click", () => downloadText(state.all, "proxy-list.txt"));
+    $("#refresh").addEventListener("click", async () => { const button = $("#refresh"); button.disabled = true; button.style.opacity = ".55"; await loadProxies(); button.disabled = false; button.style.opacity = "1"; showToast("Список обновлён"); });
+    loadProxies();
+  </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+name = "proxy-list"
+pages_build_output_dir = "."
+compatibility_date = "2026-11-03"
+
+# Cloudflare Pages Advanced Mode: _worker.js lives in the output directory.
+# Keep this file aligned with the Pages project settings in the Cloudflare dashboard.
