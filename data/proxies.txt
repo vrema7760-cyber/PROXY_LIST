@@ -1,0 +1,5 @@
+# PROXY_LIST — добавляй по одной записи на строку.
+# MTProto: tg://proxy?server=...&port=...&secret=... или https://t.me/proxy?...
+# SOCKS: socks5://host:port, socks4://host:port или host:port:user:password
+# WEB: http://host:port, https://host:port или host:port
+# Используй только прокси, которые имеешь право публиковать.
