@@ -1,0 +1,4 @@
+# Add one proxy per line.
+# MTProto: tg://proxy?... or https://t.me/proxy?... 
+# SOCKS: socks5://host:port or host:port:user:password
+# WEB: http://host:port or https://host:port
